@@ -1,0 +1,104 @@
+import type {
+  MealType,
+  DayOfWeek,
+  MealLocation,
+  OperatingSchedule,
+} from "@/types/location";
+import type { Suburb } from "@/types/suburb";
+
+/**
+ * Database type definitions for Supabase.
+ *
+ * In production, generate these with:
+ *   supabase gen types typescript --project-id <id> > src/lib/supabase/types.ts
+ *
+ * These manual types match the schema in supabase/migrations/.
+ */
+export interface Database {
+  public: {
+    Tables: {
+      locations: {
+        Row: {
+          id: string;
+          name: string;
+          organisation: string | null;
+          description: string | null;
+          street_address: string;
+          suburb: string;
+          postcode: string;
+          state: string;
+          latitude: number;
+          longitude: number;
+          phone: string | null;
+          email: string | null;
+          website: string | null;
+          eligibility_criteria: string | null;
+          referral_required: boolean;
+          wheelchair_accessible: boolean;
+          is_active: boolean;
+          last_verified_at: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["locations"]["Row"],
+          "id" | "created_at" | "updated_at"
+        > & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["locations"]["Insert"]>;
+      };
+      operating_schedules: {
+        Row: {
+          id: string;
+          location_id: string;
+          day: DayOfWeek;
+          meal_type: MealType;
+          start_time: string;
+          end_time: string;
+          notes: string | null;
+          is_active: boolean;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["operating_schedules"]["Row"],
+          "id"
+        > & {
+          id?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["operating_schedules"]["Insert"]
+        >;
+      };
+      suburbs: {
+        Row: {
+          id: number;
+          name: string;
+          postcode: string;
+          latitude: number | null;
+          longitude: number | null;
+          lga: string | null;
+        };
+        Insert: Omit<Database["public"]["Tables"]["suburbs"]["Row"], "id"> & {
+          id?: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["suburbs"]["Insert"]>;
+      };
+    };
+    Enums: {
+      meal_type: MealType;
+      day_of_week: DayOfWeek;
+    };
+  };
+}
+
+// Convenience type aliases for use across the app
+export type LocationRow = Database["public"]["Tables"]["locations"]["Row"];
+export type ScheduleRow =
+  Database["public"]["Tables"]["operating_schedules"]["Row"];
+export type SuburbRow = Database["public"]["Tables"]["suburbs"]["Row"];
+
+// Re-export domain types for convenience
+export type { MealLocation, OperatingSchedule, MealType, DayOfWeek, Suburb };
