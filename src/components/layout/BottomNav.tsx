@@ -2,12 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Map, Search, CalendarDays, Info } from "lucide-react";
+import { Map, Search, CalendarDays, PlusCircle, Info } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/map", label: "Map", icon: Map },
   { href: "/search", label: "Search", icon: Search },
   { href: "/planner", label: "Planner", icon: CalendarDays },
+  { href: "/submit", label: "Submit", icon: PlusCircle },
   { href: "/about", label: "About", icon: Info },
 ] as const;
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Map, Search, CalendarDays } from "lucide-react";
+import { Map, Search, CalendarDays, PlusCircle } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const FEATURES = [
@@ -20,6 +20,12 @@ const FEATURES = [
     title: "Weekly Planner",
     description: "Plan your meals for the week ahead",
     icon: CalendarDays,
+  },
+  {
+    href: "/submit",
+    title: "Submit a Service",
+    description: "Know a free meal location? Help us add it",
+    icon: PlusCircle,
   },
 ] as const;
 
@@ -46,7 +52,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="grid w-full gap-4 sm:grid-cols-3">
+      <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {FEATURES.map(({ href, title, description, icon: Icon }) => (
           <Link key={href} href={href}>
             <Card className="h-full transition-colors hover:bg-accent">

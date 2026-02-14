@@ -11,7 +11,9 @@ import {
   Clock,
   Loader2,
   AlertCircle,
+  Pencil,
 } from "lucide-react";
+import { EditSuggestionDialog } from "@/components/submit/EditSuggestionDialog";
 import { createClient } from "@/lib/supabase/client";
 import type { MealLocation, DayOfWeek } from "@/types/location";
 import {
@@ -31,6 +33,7 @@ export function LocationDetail({ id }: LocationDetailProps) {
   const [location, setLocation] = useState<MealLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   useEffect(() => {
     async function fetchLocation() {
@@ -274,7 +277,7 @@ export function LocationDetail({ id }: LocationDetailProps) {
       )}
 
       {/* Directions CTA */}
-      <div className="mt-6 pb-4">
+      <div className="mt-6 space-y-3 pb-4">
         <a
           href={getDirectionsUrl(
             location.latitude,
@@ -288,7 +291,21 @@ export function LocationDetail({ id }: LocationDetailProps) {
           <Navigation className="h-5 w-5" aria-hidden="true" />
           Get directions
         </a>
+        <button
+          type="button"
+          onClick={() => setEditDialogOpen(true)}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 text-base font-medium transition-colors hover:bg-accent"
+        >
+          <Pencil className="h-5 w-5" aria-hidden="true" />
+          Suggest an edit
+        </button>
       </div>
+
+      <EditSuggestionDialog
+        location={location}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+      />
     </div>
   );
 }

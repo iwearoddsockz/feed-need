@@ -5,6 +5,10 @@ import type {
   OperatingSchedule,
 } from "@/types/location";
 import type { Suburb } from "@/types/suburb";
+import type {
+  SubmissionType,
+  SubmissionStatus,
+} from "@/types/submission";
 
 /**
  * Database type definitions for Supabase.
@@ -86,10 +90,38 @@ export interface Database {
         };
         Update: Partial<Database["public"]["Tables"]["suburbs"]["Insert"]>;
       };
+      submissions: {
+        Row: {
+          id: string;
+          submission_type: SubmissionType;
+          status: SubmissionStatus;
+          location_id: string | null;
+          submitted_data: Record<string, unknown>;
+          submitted_schedules: Record<string, unknown>[] | null;
+          submitter_notes: string | null;
+          admin_notes: string | null;
+          submission_ip_hash: string | null;
+          created_at: string;
+          reviewed_at: string | null;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["submissions"]["Row"],
+          "id" | "status" | "admin_notes" | "created_at" | "reviewed_at"
+        > & {
+          id?: string;
+          status?: SubmissionStatus;
+          admin_notes?: string | null;
+          created_at?: string;
+          reviewed_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["submissions"]["Insert"]>;
+      };
     };
     Enums: {
       meal_type: MealType;
       day_of_week: DayOfWeek;
+      submission_type: SubmissionType;
+      submission_status: SubmissionStatus;
     };
   };
 }
@@ -99,6 +131,9 @@ export type LocationRow = Database["public"]["Tables"]["locations"]["Row"];
 export type ScheduleRow =
   Database["public"]["Tables"]["operating_schedules"]["Row"];
 export type SuburbRow = Database["public"]["Tables"]["suburbs"]["Row"];
+export type SubmissionRow =
+  Database["public"]["Tables"]["submissions"]["Row"];
 
 // Re-export domain types for convenience
 export type { MealLocation, OperatingSchedule, MealType, DayOfWeek, Suburb };
+export type { SubmissionType, SubmissionStatus };
