@@ -16,7 +16,7 @@ export function MapLegend() {
     <div className="absolute bottom-4 left-4 z-[1000]">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-medium shadow-md"
+        className="flex items-center gap-1.5 rounded-lg bg-background px-3 py-2 text-sm font-medium shadow-md"
         aria-expanded={expanded}
         aria-label="Map legend"
       >
@@ -29,7 +29,7 @@ export function MapLegend() {
       </button>
 
       {expanded && (
-        <div className="mt-1 rounded-lg bg-white p-3 shadow-md">
+        <div className="mt-1 rounded-lg bg-background p-3 shadow-md">
           <ul className="space-y-1.5" role="list">
             {LEGEND_ITEMS.map((item) => (
               <li key={item.label} className="flex items-center gap-2 text-sm">

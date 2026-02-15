@@ -119,7 +119,7 @@ export function LocationDetail({ id }: LocationDetailProps) {
       {/* Status badge */}
       <div className="mt-3">
         {status === "serving" && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-950 dark:text-green-400">
             <span
               className="h-2 w-2 rounded-full bg-green-600"
               aria-hidden="true"
@@ -128,7 +128,7 @@ export function LocationDetail({ id }: LocationDetailProps) {
           </span>
         )}
         {status === "today" && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-400">
             <span
               className="h-2 w-2 rounded-full bg-blue-600"
               aria-hidden="true"
@@ -137,7 +137,7 @@ export function LocationDetail({ id }: LocationDetailProps) {
           </span>
         )}
         {status === "closed" && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <span
               className="h-2 w-2 rounded-full bg-gray-400"
               aria-hidden="true"
@@ -204,12 +204,12 @@ export function LocationDetail({ id }: LocationDetailProps) {
       {/* Accessibility & Eligibility */}
       <div className="mt-4 flex flex-wrap gap-2">
         {location.wheelchair_accessible && (
-          <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-700">
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-700 dark:bg-blue-950 dark:text-blue-400">
             Wheelchair accessible
           </span>
         )}
         {location.referral_required && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-sm text-amber-700">
+          <span className="rounded-full bg-amber-50 px-3 py-1 text-sm text-amber-700 dark:bg-amber-950 dark:text-amber-400">
             Referral required
           </span>
         )}
@@ -298,6 +298,7 @@ export function LocationDetail({ id }: LocationDetailProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-base font-medium text-primary-foreground"
+          aria-label={`Get directions to ${location.name} (opens in new tab)`}
         >
           <Navigation className="h-5 w-5" aria-hidden="true" />
           Get directions

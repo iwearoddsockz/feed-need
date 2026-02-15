@@ -102,7 +102,7 @@ export function FilterBar({
         onClick={() => onOpenNowChange(!openNow)}
         className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
           openNow
-            ? "border-green-600 bg-green-50 text-green-700"
+            ? "border-green-600 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
             : "bg-background hover:bg-accent/50"
         }`}
         aria-pressed={openNow}

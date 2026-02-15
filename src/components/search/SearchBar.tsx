@@ -100,7 +100,7 @@ export function SearchBar({ onSelect, onClear }: SearchBarProps) {
         {inputValue && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 hover:bg-accent"
+            className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded hover:bg-accent"
             aria-label="Clear search"
           >
             <X

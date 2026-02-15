@@ -22,8 +22,8 @@ export function LocationCard({ location, distance }: LocationCardProps) {
   const todaySchedules = getTodaySchedules(location);
 
   return (
-    <Link href={`/location/${location.id}`} className="block">
-      <div className="rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50">
+    <div className="rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50">
+      <Link href={`/location/${location.id}`} className="block">
         <div className="min-w-0">
           <h2 className="text-base font-semibold leading-tight">
             {location.name}
@@ -56,7 +56,7 @@ export function LocationCard({ location, distance }: LocationCardProps) {
 
         <div className="mt-2">
           {status === "serving" && (
-            <div className="flex items-center gap-1.5 text-sm font-medium text-green-700">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-green-700 dark:text-green-400">
               <span
                 className="inline-block h-2 w-2 rounded-full bg-green-600"
                 aria-hidden="true"
@@ -73,7 +73,7 @@ export function LocationCard({ location, distance }: LocationCardProps) {
             </div>
           )}
           {status === "today" && todaySchedules.length > 0 && (
-            <div className="flex items-start gap-1.5 text-sm text-blue-700">
+            <div className="flex items-start gap-1.5 text-sm text-blue-700 dark:text-blue-400">
               <span
                 className="mt-1 inline-block h-2 w-2 shrink-0 rounded-full bg-blue-600"
                 aria-hidden="true"
@@ -105,39 +105,40 @@ export function LocationCard({ location, distance }: LocationCardProps) {
             {location.nearby_transit.bus_stops.length > 0 && (
               <span className="inline-flex items-center gap-1">
                 <Bus className="h-3 w-3" aria-hidden="true" />
+                <span className="sr-only">Nearest bus stop: </span>
                 {formatBusStopCompact(location.nearby_transit.bus_stops[0])}
               </span>
             )}
             {location.nearby_transit.train_stations.length > 0 && (
               <span className="inline-flex items-center gap-1">
                 <TrainFront className="h-3 w-3" aria-hidden="true" />
+                <span className="sr-only">Nearest train station: </span>
                 {formatTrainStationCompact(location.nearby_transit.train_stations[0])}
               </span>
             )}
           </div>
         )}
+      </Link>
 
-        <div className="mt-2 flex items-center text-sm">
-          {location.wheelchair_accessible && (
-            <span className="text-muted-foreground">Wheelchair accessible</span>
+      <div className="mt-2 flex items-center text-sm">
+        {location.wheelchair_accessible && (
+          <span className="text-muted-foreground">Wheelchair accessible</span>
+        )}
+        <a
+          href={getDirectionsUrl(
+            location.latitude,
+            location.longitude,
+            location.name
           )}
-          <a
-            href={getDirectionsUrl(
-              location.latitude,
-              location.longitude,
-              location.name
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-auto inline-flex items-center gap-1 font-medium text-primary"
-            onClick={(e) => e.stopPropagation()}
-            aria-label={`Get directions to ${location.name}`}
-          >
-            <Navigation className="h-3.5 w-3.5" aria-hidden="true" />
-            Directions
-          </a>
-        </div>
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-auto inline-flex items-center gap-1 font-medium text-primary"
+          aria-label={`Get directions to ${location.name} (opens in new tab)`}
+        >
+          <Navigation className="h-3.5 w-3.5" aria-hidden="true" />
+          Directions
+        </a>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -42,6 +42,7 @@ export function WeekGrid() {
           aria-label={formatDay(selectedDay)}
           className="mt-3 space-y-3"
         >
+          <h2 className="sr-only">{formatDay(selectedDay)}</h2>
           {MEAL_SLOT_TYPES.map((slot) => (
             <MealSlot key={`${selectedDay}-${slot}`} day={selectedDay} slot={slot} />
           ))}

@@ -7,9 +7,14 @@ export function walkMinutes(distanceM: number): number {
   return Math.round((distanceM / 1000 / WALK_SPEED_KMH) * 60);
 }
 
-/** Transperth live timetable URL for a stop number */
-export function getStopUrl(stopId: string): string {
-  return `https://www.transperth.wa.gov.au/Timetables/LiveTimetables?StopNumber=${encodeURIComponent(stopId)}`;
+/** Google Maps transit view for a bus stop (shows live departures) */
+export function getStopTransitUrl(lat: number, lng: number, name: string): string {
+  return `https://www.google.com/maps/search/${encodeURIComponent(name)}/@${lat},${lng},17z`;
+}
+
+/** Google Maps transit directions to a location */
+export function getTransitDirectionsUrl(lat: number, lng: number): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=transit`;
 }
 
 /** Transperth journey planner URL */

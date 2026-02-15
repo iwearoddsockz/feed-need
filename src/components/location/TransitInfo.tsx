@@ -30,13 +30,14 @@ export function TransitInfo({ transit }: TransitInfoProps) {
                   {stop.distance_m}m away ({stop.walk_min} min walk)
                 </div>
                 {stop.routes.length > 0 && (
-                  <div className="mt-1 flex flex-wrap gap-1">
+                  <div className="mt-1 flex flex-wrap gap-1" role="list" aria-label="Bus routes at this stop">
                     {stop.routes.map((route) => (
                       <span
                         key={route}
+                        role="listitem"
                         className="rounded bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary"
                       >
-                        {route}
+                        <span className="sr-only">Route </span>{route}
                       </span>
                     ))}
                   </div>
@@ -46,6 +47,7 @@ export function TransitInfo({ transit }: TransitInfoProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-primary"
+                  aria-label={`View ${stop.name} on Google Maps (opens in new tab)`}
                 >
                   View on map
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />
@@ -74,6 +76,7 @@ export function TransitInfo({ transit }: TransitInfoProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-primary"
+                  aria-label={`Walking directions to ${station.name} station (opens in new tab)`}
                 >
                   Walking directions
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />
