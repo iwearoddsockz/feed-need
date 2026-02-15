@@ -1,11 +1,11 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import type { MealLocation } from "@/types/location";
+import type { LocationWithDistance } from "@/lib/hooks/useLocations";
 import { LocationCard } from "@/components/location/LocationCard";
 
 interface LocationListProps {
-  locations: MealLocation[];
+  locations: LocationWithDistance[];
   loading: boolean;
   error: string | null;
 }
@@ -49,7 +49,7 @@ export function LocationList({ locations, loading, error }: LocationListProps) {
       <div className="space-y-3" role="list">
         {locations.map((location) => (
           <div key={location.id} role="listitem">
-            <LocationCard location={location} />
+            <LocationCard location={location} distance={location.distance} />
           </div>
         ))}
       </div>

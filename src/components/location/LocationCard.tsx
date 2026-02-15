@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, Bus, TrainFront } from "lucide-react";
 import type { MealLocation } from "@/types/location";
 import { formatAddress, getDirectionsUrl, formatMealType } from "@/lib/utils/format";
+import { formatBusStopCompact, formatTrainStationCompact } from "@/lib/utils/transit";
 import { formatTime } from "@/lib/utils/date";
+import { formatDistance } from "@/lib/utils/geo";
 import {
   getMarkerStatus,
   getTodaySchedules,
@@ -12,9 +14,10 @@ import {
 
 interface LocationCardProps {
   location: MealLocation;
+  distance?: number;
 }
 
-export function LocationCard({ location }: LocationCardProps) {
+export function LocationCard({ location, distance }: LocationCardProps) {
   const status = getMarkerStatus(location);
   const todaySchedules = getTodaySchedules(location);
 
@@ -35,13 +38,20 @@ export function LocationCard({ location }: LocationCardProps) {
 
         <div className="mt-1.5 flex items-start gap-1.5 text-sm text-muted-foreground">
           <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          <span>
-            {formatAddress(
-              location.street_address,
-              location.suburb,
-              location.postcode
+          <div>
+            <span>
+              {formatAddress(
+                location.street_address,
+                location.suburb,
+                location.postcode
+              )}
+            </span>
+            {distance !== undefined && (
+              <span className="ml-1.5 font-medium text-primary">
+                {formatDistance(distance)} away
+              </span>
             )}
-          </span>
+          </div>
         </div>
 
         <div className="mt-2">
@@ -89,6 +99,23 @@ export function LocationCard({ location }: LocationCardProps) {
             </div>
           )}
         </div>
+
+        {location.nearby_transit && (location.nearby_transit.bus_stops.length > 0 || location.nearby_transit.train_stations.length > 0) && (
+          <div className="mt-1.5 flex items-center gap-3 text-xs text-muted-foreground">
+            {location.nearby_transit.bus_stops.length > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <Bus className="h-3 w-3" aria-hidden="true" />
+                {formatBusStopCompact(location.nearby_transit.bus_stops[0])}
+              </span>
+            )}
+            {location.nearby_transit.train_stations.length > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <TrainFront className="h-3 w-3" aria-hidden="true" />
+                {formatTrainStationCompact(location.nearby_transit.train_stations[0])}
+              </span>
+            )}
+          </div>
+        )}
 
         <div className="mt-2 flex items-center text-sm">
           {location.wheelchair_accessible && (

@@ -3,30 +3,68 @@
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { cacheLocations, getCachedLocations } from "@/lib/cache/locations";
+import { distanceKm } from "@/lib/utils/geo";
 import type { MealLocation, DayOfWeek, MealType } from "@/types/location";
+
+export type LocationWithDistance = MealLocation & { distance?: number };
 
 export interface LocationFilters {
   suburb?: string;
   postcode?: string;
   day?: DayOfWeek;
   mealType?: MealType;
+  centerLat?: number;
+  centerLng?: number;
+  radiusKm?: number;
+}
+
+function applyDistanceFilter(
+  locations: MealLocation[],
+  centerLat: number,
+  centerLng: number,
+  radiusKm?: number
+): LocationWithDistance[] {
+  const withDistance = locations.map((loc) => ({
+    ...loc,
+    distance: distanceKm(centerLat, centerLng, loc.latitude, loc.longitude),
+  }));
+
+  const filtered = radiusKm
+    ? withDistance.filter((loc) => loc.distance <= radiusKm)
+    : withDistance;
+
+  return filtered.sort((a, b) => a.distance - b.distance);
 }
 
 function applyClientFilters(
   locations: MealLocation[],
   filters?: LocationFilters
-): MealLocation[] {
-  let results = locations;
+): LocationWithDistance[] {
+  let results: LocationWithDistance[] = locations;
 
-  if (filters?.suburb) {
-    const s = filters.suburb.toLowerCase();
-    results = results.filter((loc) =>
-      loc.suburb.toLowerCase().includes(s)
+  // Distance-based filtering (replaces suburb ilike when center is set)
+  if (
+    filters?.centerLat !== undefined &&
+    filters?.centerLng !== undefined
+  ) {
+    results = applyDistanceFilter(
+      results,
+      filters.centerLat,
+      filters.centerLng,
+      filters.radiusKm
     );
+  } else {
+    if (filters?.suburb) {
+      const s = filters.suburb.toLowerCase();
+      results = results.filter((loc) =>
+        loc.suburb.toLowerCase().includes(s)
+      );
+    }
+    if (filters?.postcode) {
+      results = results.filter((loc) => loc.postcode === filters.postcode);
+    }
   }
-  if (filters?.postcode) {
-    results = results.filter((loc) => loc.postcode === filters.postcode);
-  }
+
   if (filters?.day || filters?.mealType) {
     results = results
       .map((loc) => ({
@@ -45,7 +83,7 @@ function applyClientFilters(
 }
 
 export function useLocations(filters?: LocationFilters) {
-  const [locations, setLocations] = useState<MealLocation[]>([]);
+  const [locations, setLocations] = useState<LocationWithDistance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fromCache, setFromCache] = useState(false);
@@ -57,6 +95,8 @@ export function useLocations(filters?: LocationFilters) {
 
     try {
       const supabase = createClient();
+      const useDistanceFilter =
+        filters?.centerLat !== undefined && filters?.centerLng !== undefined;
 
       let query = supabase
         .from("locations")
@@ -69,11 +109,14 @@ export function useLocations(filters?: LocationFilters) {
         .eq("is_active", true)
         .order("name");
 
-      if (filters?.suburb) {
-        query = query.ilike("suburb", `%${filters.suburb}%`);
-      }
-      if (filters?.postcode) {
-        query = query.eq("postcode", filters.postcode);
+      // Only apply server-side suburb/postcode filter when NOT using distance
+      if (!useDistanceFilter) {
+        if (filters?.suburb) {
+          query = query.ilike("suburb", `%${filters.suburb}%`);
+        }
+        if (filters?.postcode) {
+          query = query.eq("postcode", filters.postcode);
+        }
       }
 
       const { data, error: queryError } = await query;
@@ -99,10 +142,29 @@ export function useLocations(filters?: LocationFilters) {
           .filter((loc) => loc.operating_schedules.length > 0);
       }
 
-      setLocations(results);
+      // Apply distance filter + sort if center is set
+      let finalResults: LocationWithDistance[];
+      if (useDistanceFilter) {
+        finalResults = applyDistanceFilter(
+          results,
+          filters.centerLat!,
+          filters.centerLng!,
+          filters.radiusKm
+        );
+      } else {
+        finalResults = results;
+      }
+
+      setLocations(finalResults);
 
       // Cache the full unfiltered dataset to IndexedDB for offline use
-      if (!filters?.suburb && !filters?.postcode && !filters?.day && !filters?.mealType) {
+      if (
+        !filters?.suburb &&
+        !filters?.postcode &&
+        !filters?.day &&
+        !filters?.mealType &&
+        !useDistanceFilter
+      ) {
         cacheLocations(results);
       }
     } catch (err) {
@@ -124,7 +186,15 @@ export function useLocations(filters?: LocationFilters) {
     } finally {
       setLoading(false);
     }
-  }, [filters?.suburb, filters?.postcode, filters?.day, filters?.mealType]);
+  }, [
+    filters?.suburb,
+    filters?.postcode,
+    filters?.day,
+    filters?.mealType,
+    filters?.centerLat,
+    filters?.centerLng,
+    filters?.radiusKm,
+  ]);
 
   useEffect(() => {
     fetchLocations();

@@ -15,6 +15,29 @@ export type DayOfWeek =
   | "saturday"
   | "sunday";
 
+export interface NearbyBusStop {
+  name: string;
+  stop_id: string;
+  lat: number;
+  lng: number;
+  distance_m: number;
+  walk_min: number;
+  routes: string[];
+}
+
+export interface NearbyTrainStation {
+  name: string;
+  lat: number;
+  lng: number;
+  distance_m: number;
+  walk_min: number;
+}
+
+export interface NearbyTransit {
+  bus_stops: NearbyBusStop[];
+  train_stations: NearbyTrainStation[];
+}
+
 export interface MealLocation {
   id: string;
   name: string;
@@ -34,6 +57,7 @@ export interface MealLocation {
   is_active: boolean;
   last_verified_at: string | null;
   notes: string | null;
+  nearby_transit: NearbyTransit | null;
   operating_schedules: OperatingSchedule[];
 }
 

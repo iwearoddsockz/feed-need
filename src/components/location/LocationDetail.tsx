@@ -14,6 +14,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { EditSuggestionDialog } from "@/components/submit/EditSuggestionDialog";
+import { TransitInfo } from "@/components/location/TransitInfo";
 import { createClient } from "@/lib/supabase/client";
 import type { MealLocation, DayOfWeek } from "@/types/location";
 import {
@@ -265,6 +266,16 @@ export function LocationDetail({ id }: LocationDetailProps) {
           </div>
         )}
       </div>
+
+      {/* Transit */}
+      {location.nearby_transit && (
+        <div className="mt-6">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Getting there by public transport
+          </h2>
+          <TransitInfo transit={location.nearby_transit} />
+        </div>
+      )}
 
       {/* Notes */}
       {location.notes && (

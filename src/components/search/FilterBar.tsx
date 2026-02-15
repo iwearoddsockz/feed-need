@@ -6,13 +6,24 @@ import { DAYS_OF_WEEK, MEAL_TYPES } from "@/lib/utils/constants";
 import { formatDay } from "@/lib/utils/date";
 import { formatMealType } from "@/lib/utils/format";
 
+const RADIUS_OPTIONS = [
+  { value: "", label: "Any distance" },
+  { value: "2", label: "Within 2 km" },
+  { value: "5", label: "Within 5 km" },
+  { value: "10", label: "Within 10 km" },
+  { value: "20", label: "Within 20 km" },
+] as const;
+
 interface FilterBarProps {
   day: DayOfWeek | undefined;
   mealType: MealType | undefined;
   openNow: boolean;
+  radiusKm: number | undefined;
+  showRadius: boolean;
   onDayChange: (day: DayOfWeek | undefined) => void;
   onMealTypeChange: (type: MealType | undefined) => void;
   onOpenNowChange: (open: boolean) => void;
+  onRadiusChange: (radius: number | undefined) => void;
   onClearAll: () => void;
   hasActiveFilters: boolean;
 }
@@ -21,14 +32,36 @@ export function FilterBar({
   day,
   mealType,
   openNow,
+  radiusKm,
+  showRadius,
   onDayChange,
   onMealTypeChange,
   onOpenNowChange,
+  onRadiusChange,
   onClearAll,
   hasActiveFilters,
 }: FilterBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {showRadius && (
+        <select
+          value={radiusKm?.toString() ?? ""}
+          onChange={(e) =>
+            onRadiusChange(
+              e.target.value ? Number(e.target.value) : undefined
+            )
+          }
+          className="rounded-lg border bg-background px-3 py-2 text-sm"
+          aria-label="Filter by distance"
+        >
+          {RADIUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      )}
+
       <select
         value={day ?? ""}
         onChange={(e) =>

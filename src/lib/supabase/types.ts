@@ -3,6 +3,9 @@ import type {
   DayOfWeek,
   MealLocation,
   OperatingSchedule,
+  NearbyTransit,
+  NearbyBusStop,
+  NearbyTrainStation,
 } from "@/types/location";
 import type { Suburb } from "@/types/suburb";
 import type {
@@ -41,15 +44,17 @@ export interface Database {
           wheelchair_accessible: boolean;
           is_active: boolean;
           last_verified_at: string | null;
+          nearby_transit: NearbyTransit | null;
           notes: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: Omit<
           Database["public"]["Tables"]["locations"]["Row"],
-          "id" | "created_at" | "updated_at"
+          "id" | "nearby_transit" | "created_at" | "updated_at"
         > & {
           id?: string;
+          nearby_transit?: NearbyTransit | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -136,4 +141,5 @@ export type SubmissionRow =
 
 // Re-export domain types for convenience
 export type { MealLocation, OperatingSchedule, MealType, DayOfWeek, Suburb };
+export type { NearbyTransit, NearbyBusStop, NearbyTrainStation };
 export type { SubmissionType, SubmissionStatus };

@@ -6,7 +6,7 @@ import { useSuburbs } from "@/lib/hooks/useSuburbs";
 import type { Suburb } from "@/types/suburb";
 
 interface SearchBarProps {
-  onSelect: (suburb: string, postcode: string) => void;
+  onSelect: (suburb: string, postcode: string, lat: number, lng: number) => void;
   onClear: () => void;
 }
 
@@ -39,7 +39,7 @@ export function SearchBar({ onSelect, onClear }: SearchBarProps) {
   function handleSelect(suburb: Omit<Suburb, "id">) {
     setInputValue(`${suburb.name} (${suburb.postcode})`);
     setIsOpen(false);
-    onSelect(suburb.name, suburb.postcode);
+    onSelect(suburb.name, suburb.postcode, suburb.latitude ?? 0, suburb.longitude ?? 0);
   }
 
   function handleClear() {
