@@ -2,7 +2,7 @@
 
 import { Bus, TrainFront, ExternalLink } from "lucide-react";
 import type { NearbyTransit } from "@/types/location";
-import { getStopUrl, getWalkingDirectionsUrl } from "@/lib/utils/transit";
+import { getStopTransitUrl, getWalkingDirectionsUrl } from "@/lib/utils/transit";
 
 interface TransitInfoProps {
   transit: NearbyTransit;
@@ -42,12 +42,12 @@ export function TransitInfo({ transit }: TransitInfoProps) {
                   </div>
                 )}
                 <a
-                  href={getStopUrl(stop.stop_id)}
+                  href={getStopTransitUrl(stop.lat, stop.lng, stop.name)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-primary"
                 >
-                  View timetable
+                  View on map
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />
                 </a>
               </li>
