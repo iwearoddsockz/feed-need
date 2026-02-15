@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error: fetchError } = await (supabase
     .from("locations")
-    .select("id, name, latitude, longitude")
+    .select("id, name, latitude, longitude, nearby_transit")
     .eq("is_active", true)
     .order("name") as any);
 
@@ -128,15 +128,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: fetchError.message }, { status: 500 });
   }
 
-  const locations = (data ?? []) as LocationRow[];
+  const allLocations = (data ?? []) as (LocationRow & { nearby_transit: NearbyTransit | null })[];
+
+  // Only process locations with empty transit data (retry-safe)
+  const retryOnly = request.nextUrl.searchParams.get("retry") === "true";
+  const locations = retryOnly
+    ? allLocations.filter((loc) => {
+        const t = loc.nearby_transit;
+        return !t || (t.bus_stops.length === 0 && t.train_stations.length === 0);
+      })
+    : allLocations;
+
   const results: { name: string; bus_stops: number; train_stations: number; error?: string }[] = [];
 
   for (const loc of locations) {
     try {
-      const [busStops, trainStations] = await Promise.all([
-        getBusStops(loc.latitude, loc.longitude),
-        getTrainStations(loc.latitude, loc.longitude),
-      ]);
+      // Sequential requests to avoid Overpass rate limiting
+      const busStops = await getBusStops(loc.latitude, loc.longitude);
+      await sleep(2000);
+      const trainStations = await getTrainStations(loc.latitude, loc.longitude);
 
       const transit: NearbyTransit = {
         bus_stops: busStops,
@@ -163,8 +173,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Rate limit: 1 second between Overpass requests
-    await sleep(1000);
+    // Rate limit: 2 seconds between locations
+    await sleep(2000);
   }
 
   return NextResponse.json({ success: true, results });
